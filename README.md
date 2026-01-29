@@ -1,2 +1,76 @@
-# PDF-Tools
+# PDF Tools
 
+Aplicação web para manipulação de PDFs: juntar, organizar, dividir, comprimir e converter para Word. Interface moderna, responsiva e executada no navegador (sem necessidade de servidor para as operações).
+
+## Funcionalidades
+
+- **Juntar & Organizar PDF** — Mesclar vários PDFs em um só ou reorganizar as páginas de um único PDF. Arraste para reordenar; preview em tempo real.
+- **Dividir PDF** — Extrair páginas por intervalo ou páginas específicas. Opção de baixar em ZIP.
+- **Comprimir PDF** — Reduzir tamanho com controle de qualidade. Preview lado a lado (original vs comprimido) com zoom interativo.
+- **PDF para Word** — Converter PDF em documento editável (DOCX) preservando estrutura e formatação.
+
+## Tecnologias
+
+- **Frontend:** React 18, TypeScript, Vite
+- **PDF:** pdf-lib, pdfjs-dist
+- **Documentos:** docx (geração de DOCX)
+- **UI:** CSS customizado, react-icons, ldrs (loading)
+
+## Pré-requisitos
+
+- Node.js 18+
+- npm ou yarn
+
+## Instalação
+
+```bash
+# Clonar o repositório
+git clone https://github.com/<seu-usuario>/PDF-Tools.git
+cd PDF-Tools
+
+# Instalar dependências
+npm install
+
+# Variáveis de ambiente (opcional)
+# Crie um arquivo .env na raiz se usar Supabase para contador de usos.
+# Exemplo: VITE_SUPABASE_URL=... e VITE_SUPABASE_ANON_KEY=...
+```
+
+## Execução
+
+```bash
+# Desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
+```
+
+## Estrutura do projeto
+
+```
+src/
+├── components/       # Componentes reutilizáveis
+│   ├── common/       # Botões, upload, loading
+│   ├── Layout/       # Sidebar, layout principal
+│   └── PDFViewer/    # Previews de PDF (merge, split, compress)
+├── contexts/         # React Context (ex.: contador de usos)
+├── pages/            # Páginas das ferramentas (Merge, Split, Compress, Word)
+├── services/         # Lógica de PDF (merge, split, compress, pdfToWord)
+├── styles/           # Estilos globais
+├── types/            # Tipos TypeScript
+└── utils/            # Utilitários (thumbnails, etc.)
+```
+
+## Limitações
+
+- **Tamanho de arquivo:** PDFs muito grandes podem atingir limites de memória do navegador.
+- **PDF para Word:** Texto e estrutura são preservados; imagens embutidas no DOCX dependem da implementação atual.
+- **Compressão:** Baseada em reprocessamento de imagens no cliente; resultados variam conforme o PDF.
+
+## Licença
+
+Projeto de código aberto para uso livre.
