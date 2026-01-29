@@ -1,0 +1,64 @@
+.floating-upload-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.4), 0 0 0 4px rgba(30, 64, 175, 0.1);
+  z-index: 999;
+  transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.floating-upload-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.5), 0 0 0 4px rgba(30, 64, 175, 0.15);
+}
+
+.floating-upload-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.floating-upload-btn.dragging {
+  background: var(--primary-hover);
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(30, 64, 175, 0.6), 0 0 0 6px rgba(30, 64, 175, 0.2);
+}
+
+.floating-upload-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.floating-upload-text {
+  white-space: nowrap;
+}
+
+/* Responsive: ajustar posição em telas menores */
+@media (max-width: 768px) {
+  .floating-upload-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .floating-upload-text {
+    display: none;
+  }
+
+  .floating-upload-icon {
+    font-size: 1.5rem;
+  }
+}

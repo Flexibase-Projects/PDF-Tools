@@ -1,0 +1,42 @@
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+.download-button:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(30, 64, 175, 0.3);
+}
+
+.download-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.download-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.download-button.success {
+  background: var(--success);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.download-button.success:hover {
+  background: #059669;
+}
+
+.download-button l-tailspin {
+  display: inline-block;
+}
