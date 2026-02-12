@@ -69,8 +69,7 @@ export const convertPDFToWord = async (file: File): Promise<Blob> => {
 
       // Tentar extrair imagens da página (opcional, não bloqueia a conversão)
       try {
-        const opList = await page.getOperatorList();
-        const images = await extractImagesFromPage(page, opList);
+        const images = await extractImagesFromPage(page);
         if (images.length > 0) {
           extractedContent.images.push(...images);
         }
@@ -100,7 +99,7 @@ export const convertPDFToWord = async (file: File): Promise<Blob> => {
 };
 
 // Processar itens de texto em parágrafos formatados
-function processTextItems(items: TextItem[], pageWidth: number): Paragraph[] {
+function processTextItems(items: TextItem[], _pageWidth: number): Paragraph[] {
   const paragraphs: Paragraph[] = [];
   let currentParagraph: TextRun[] = [];
   let lastY = -1;
@@ -152,7 +151,7 @@ function processTextItems(items: TextItem[], pageWidth: number): Paragraph[] {
 // Criar parágrafo a partir de runs de texto
 function createParagraphFromRuns(runs: TextRun[], defaultSize: number): Paragraph {
   // Detectar se é um título (texto maior ou em negrito)
-  const avgSize = runs.reduce((sum, run) => sum + (run.options.size || defaultSize * 2), 0) / runs.length;
+  const avgSize = runs.reduce((sum, run) => sum + ((run as { options?: { size?: number } }).options?.size ?? defaultSize * 2), 0) / runs.length;
   const isHeading = avgSize > defaultSize * 2.5;
 
   return new Paragraph({
@@ -167,8 +166,7 @@ function createParagraphFromRuns(runs: TextRun[], defaultSize: number): Paragrap
 // Nota: A extração de imagens do PDF é complexa e pode não funcionar para todos os PDFs
 // Esta função tenta extrair, mas não é crítica para a conversão
 async function extractImagesFromPage(
-  page: pdfjsLib.PDFPageProxy,
-  opList: pdfjsLib.OperatorList
+  page: pdfjsLib.PDFPageProxy
 ): Promise<ArrayBuffer[]> {
   const images: ArrayBuffer[] = [];
   
