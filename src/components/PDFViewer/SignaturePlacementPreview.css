@@ -1,0 +1,63 @@
+.signature-placement-preview {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.signature-placement-preview-wrapper {
+  position: relative;
+  width: 100%;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.signature-placement-preview .signature-placement-pdf {
+  min-height: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.signature-placement-preview .signature-placement-pdf .pdf-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.signature-placement-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.signature-placement-overlay .signature-placement-box {
+  position: absolute;
+  pointer-events: auto;
+  cursor: grab;
+  border: 2px dashed var(--primary-color);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.signature-placement-box.dragging {
+  cursor: grabbing;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.signature-placement-placeholder {
+  font-size: clamp(0.65rem, 2vw, 0.875rem);
+  color: var(--text-secondary);
+}
+
+.signature-placement-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

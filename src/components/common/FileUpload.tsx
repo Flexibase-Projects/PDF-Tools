@@ -3,18 +3,29 @@ import { FiUpload, FiFile } from 'react-icons/fi';
 import { validatePDFFile } from '../../utils/fileUtils';
 import './FileUpload.css';
 
+export type FileValidator = (file: File) => { valid: boolean; error?: string };
+
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
   multiple?: boolean;
   maxFiles?: number;
   className?: string;
+  /** Aceita tipos de arquivo (ex: ".pdf,application/pdf" ou ".docx,.doc"). Se não informado, usa PDF. */
+  accept?: string;
+  /** Validador customizado. Se não informado, usa validação de PDF. */
+  validateFile?: FileValidator;
+  /** Textos para upload (upload de Word vs PDF). */
+  uploadText?: { main: string; hint: string };
 }
 
 const FileUpload = ({ 
   onFilesSelected, 
   multiple = false, 
   maxFiles,
-  className = '' 
+  className = '',
+  accept = '.pdf,application/pdf',
+  validateFile = validatePDFFile,
+  uploadText
 }: FileUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -28,7 +39,7 @@ const FileUpload = ({
     const errors: string[] = [];
 
     fileArray.forEach((file) => {
-      const validation = validatePDFFile(file);
+      const validation = validateFile(file);
       if (validation.valid) {
         validFiles.push(file);
       } else {
@@ -94,7 +105,7 @@ const FileUpload = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,application/pdf"
+          accept={accept}
           multiple={multiple}
           onChange={handleFileInputChange}
         />
@@ -103,10 +114,10 @@ const FileUpload = ({
           <p className="upload-text">
             {isDragging 
               ? 'Solte os arquivos aqui' 
-              : 'Clique ou arraste arquivos PDF aqui'}
+              : (uploadText?.main ?? 'Clique ou arraste arquivos PDF aqui')}
           </p>
           <p className="upload-hint">
-            {multiple ? 'Você pode selecionar múltiplos arquivos' : 'Selecione um arquivo PDF'}
+            {uploadText?.hint ?? (multiple ? 'Você pode selecionar múltiplos arquivos' : 'Selecione um arquivo PDF')}
           </p>
         </div>
       </div>

@@ -1,18 +1,27 @@
 import { useRef, useState, DragEvent, ChangeEvent } from 'react';
 import { FiUpload } from 'react-icons/fi';
 import { validatePDFFile } from '../../utils/fileUtils';
+import type { FileValidator } from './FileUpload';
 import './FloatingUploadButton.css';
 
 interface FloatingUploadButtonProps {
   onFilesSelected: (files: File[]) => void;
   multiple?: boolean;
   maxFiles?: number;
+  accept?: string;
+  validateFile?: FileValidator;
+  label?: string;
+  title?: string;
 }
 
 const FloatingUploadButton = ({
   onFilesSelected,
   multiple = false,
   maxFiles,
+  accept = '.pdf,application/pdf',
+  validateFile = validatePDFFile,
+  label = 'Adicionar PDF',
+  title = 'Clique ou arraste para adicionar mais PDFs',
 }: FloatingUploadButtonProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -24,7 +33,7 @@ const FloatingUploadButton = ({
     const validFiles: File[] = [];
 
     fileArray.forEach((file) => {
-      const validation = validatePDFFile(file);
+      const validation = validateFile(file);
       if (validation.valid) {
         validFiles.push(file);
       }
@@ -74,7 +83,7 @@ const FloatingUploadButton = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,application/pdf"
+        accept={accept}
         multiple={multiple}
         onChange={handleFileInputChange}
         style={{ display: 'none' }}
@@ -85,11 +94,11 @@ const FloatingUploadButton = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        aria-label="Adicionar mais arquivos PDF"
-        title="Clique ou arraste para adicionar mais PDFs"
+        aria-label={label}
+        title={title}
       >
         <FiUpload className="floating-upload-icon" />
-        <span className="floating-upload-text">Adicionar PDF</span>
+        <span className="floating-upload-text">{label}</span>
       </button>
     </>
   );

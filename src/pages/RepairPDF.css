@@ -1,0 +1,98 @@
+.repair-controls {
+  margin-bottom: 1.5rem;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background: var(--primary-bg-subtle);
+  border-color: var(--primary-color);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(30, 64, 175, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.repair-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--background);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.repair-file-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.repair-file-size {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.repair-feedback {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--success-bg);
+  border: 1px solid var(--success);
+  border-radius: 8px;
+}
+
+.repair-feedback h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.repair-list {
+  margin: 0 0 0.5rem 0;
+  padding-left: 1.25rem;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.repair-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.repair-actions {
+  margin-top: 1.5rem;
+}
