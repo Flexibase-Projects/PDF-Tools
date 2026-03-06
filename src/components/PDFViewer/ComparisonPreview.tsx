@@ -49,7 +49,6 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
   }, [file, quality, scale]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
     const img = e.currentTarget.querySelector('img');
     if (!img) return;
     
@@ -80,7 +79,6 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
     
     // Se não houver zoomPosition, criar uma baseada na posição do mouse
     if (!zoomPosition) {
-      const rect = e.currentTarget.getBoundingClientRect();
       const img = e.currentTarget.querySelector('img');
       if (img) {
         const imgRect = img.getBoundingClientRect();

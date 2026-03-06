@@ -48,7 +48,22 @@ npm run build
 
 # Preview do build
 npm run preview
+
+# Produção (servidor estático na porta 3000)
+npm run start
 ```
+
+## Deploy (Coolify)
+
+O projeto está configurado para deploy no [Coolify](https://coolify.io/) com Nixpacks:
+
+- **Build Pack:** Nixpacks (detecta Node/Vite automaticamente).
+- **Ports Exposes:** `3000`.
+- **Port Mappings:** `8096:3000` (acesso externo na porta 8096, app escuta em 3000).
+- **Base Directory:** `/`.
+- O `nixpacks.toml` na raiz define o comando de start e `NODE_ENV=production`.
+
+Após o push, o Coolify faz o build (`npm run build`) e sobe o container com `npm run start`, servindo o app em **http://pdf.flexibase.com.br** (ou o domínio configurado) na porta **8096**.
 
 ## Estrutura do projeto
 
