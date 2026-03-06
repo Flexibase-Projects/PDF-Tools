@@ -32,8 +32,9 @@ cd PDF-Tools
 npm install
 
 # Variáveis de ambiente (opcional)
-# Crie um arquivo .env na raiz se usar Supabase para contador de usos.
-# Exemplo: VITE_SUPABASE_URL=... e VITE_SUPABASE_ANON_KEY=...
+# Copie .env.example para .env.local e preencha os valores.
+# O .env.local não é versionado (está no .gitignore).
+# Ex.: VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY para o contador de usos.
 ```
 
 ## Execução

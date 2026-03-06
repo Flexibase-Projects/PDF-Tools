@@ -16,7 +16,7 @@
 
 .file-item:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-card);
 }
 
 .file-item.dragging {
@@ -82,7 +82,7 @@
 }
 
 .file-remove:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg);
   color: var(--error);
 }
 

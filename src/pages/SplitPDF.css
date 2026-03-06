@@ -61,7 +61,7 @@
 }
 
 .file-remove-header:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg);
   color: var(--error);
 }
 
@@ -100,7 +100,7 @@
 
 .mode-option:hover {
   border-color: var(--primary-color);
-  background: rgba(30, 64, 175, 0.02);
+  background: var(--primary-bg-hover);
 }
 
 .mode-option input[type="radio"] {
@@ -114,7 +114,7 @@
 
 .mode-option:has(input[type="radio"]:checked) {
   border-color: var(--primary-color);
-  background: rgba(30, 64, 175, 0.05);
+  background: var(--primary-bg-subtle);
 }
 
 .range-controls,
@@ -152,12 +152,12 @@
 .input-group input[type="number"]:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  box-shadow: 0 0 0 3px var(--primary-bg-subtle);
 }
 
 .all-info {
   padding: 1.5rem;
-  background: rgba(30, 64, 175, 0.05);
+  background: var(--primary-bg-subtle);
   border: 1px solid var(--primary-color);
   border-radius: 8px;
   margin-bottom: 1.5rem;

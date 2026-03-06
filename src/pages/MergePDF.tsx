@@ -8,7 +8,7 @@ import LoadingOverlay from '../components/common/LoadingOverlay';
 import MergedPagesPreview from '../components/PDFViewer/MergedPagesPreview';
 import { downloadMergedPDFFromPages } from '../services/pdfMerge';
 import { useCounter } from '../contexts/CounterContext';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiUploadCloud, FiGrid, FiDownload } from 'react-icons/fi';
 import './PageStyles.css';
 import './MergePDF.css';
 
@@ -108,19 +108,59 @@ const MergePDF = () => {
   }, [files]);
 
   return (
-    <div className="page-container">
-      <div className="page-header">
-        <h1>Juntar & Organizar PDF</h1>
-        <p>Mescle múltiplos PDFs ou organize as páginas de um único PDF na ordem que desejar</p>
-      </div>
-
-      <div className="page-content">
+    <div className="page-container merge-page">
+      <div className="page-content merge-page-content">
         {files.length === 0 ? (
-          <FileUpload
-            onFilesSelected={handleFilesSelected}
-            multiple={true}
-            className="page-upload"
-          />
+          <div className="merge-empty-state">
+            <div className="merge-header-compact">
+              <h2 className="merge-tutorial-title">Como juntar e organizar seus PDFs</h2>
+              <p className="merge-tutorial-subtitle">
+                Simples em 3 passos. Seus arquivos não saem do seu navegador.
+              </p>
+            </div>
+            <div className="merge-tutorial-cards">
+              <div className="merge-tutorial-card">
+                <div className="merge-tutorial-card-icon merge-tutorial-card-icon--upload">
+                  <FiUploadCloud size={20} />
+                </div>
+                <span className="merge-tutorial-card-step">Passo 1</span>
+                <h3 className="merge-tutorial-card-title">Envie os PDFs</h3>
+                <p className="merge-tutorial-card-desc">
+                  Arraste ou clique para adicionar um ou vários arquivos. Tudo processado no seu dispositivo.
+                </p>
+              </div>
+              <div className="merge-tutorial-card-arrow" aria-hidden="true">→</div>
+              <div className="merge-tutorial-card">
+                <div className="merge-tutorial-card-icon merge-tutorial-card-icon--order">
+                  <FiGrid size={20} />
+                </div>
+                <span className="merge-tutorial-card-step">Passo 2</span>
+                <h3 className="merge-tutorial-card-title">Organize as páginas</h3>
+                <p className="merge-tutorial-card-desc">
+                  Arraste as miniaturas para definir a ordem. Remova páginas passando o mouse e clicando no X.
+                </p>
+              </div>
+              <div className="merge-tutorial-card-arrow" aria-hidden="true">→</div>
+              <div className="merge-tutorial-card">
+                <div className="merge-tutorial-card-icon merge-tutorial-card-icon--download">
+                  <FiDownload size={20} />
+                </div>
+                <span className="merge-tutorial-card-step">Passo 3</span>
+                <h3 className="merge-tutorial-card-title">Baixe o resultado</h3>
+                <p className="merge-tutorial-card-desc">
+                  Gere um único PDF mesclado e baixe direto no seu computador.
+                </p>
+              </div>
+            </div>
+            <div className="merge-upload-wrapper">
+              <p className="merge-upload-label">Comece enviando seus arquivos</p>
+              <FileUpload
+                onFilesSelected={handleFilesSelected}
+                multiple={true}
+                className="page-upload merge-upload-zone"
+              />
+            </div>
+          </div>
         ) : (
           <FloatingUploadButton
             onFilesSelected={handleFilesSelected}
@@ -130,6 +170,22 @@ const MergePDF = () => {
 
         {files.length > 0 && (
           <>
+            <div className="merge-steps">
+              <div className="merge-step merge-step-done">
+                <span className="merge-step-num">1</span>
+                <span>Arquivos</span>
+              </div>
+              <div className="merge-step-divider" />
+              <div className={`merge-step ${mergedPages.length > 0 ? 'merge-step-done' : 'merge-step-current'}`}>
+                <span className="merge-step-num">2</span>
+                <span>Ordenar páginas</span>
+              </div>
+              <div className="merge-step-divider" />
+              <div className={`merge-step ${mergedPages.length > 0 ? 'merge-step-current' : 'merge-step-pending'}`}>
+                <span className="merge-step-num">3</span>
+                <span>Baixar</span>
+              </div>
+            </div>
             {/* #region agent log */}
             {(() => {
               fetch('http://127.0.0.1:7248/ingest/6c3d1188-3daf-49fd-8b7a-e5fe63eb0bac',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'MergePDF.tsx:110',message:'Render condition check',data:{filesLength:files.length,isLoadingPages,mergedPagesLength:mergedPages.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});

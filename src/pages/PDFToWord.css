@@ -2,7 +2,7 @@
   display: flex;
   gap: 1rem;
   padding: 1.5rem;
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--warning-bg);
   border: 2px solid var(--warning);
   border-radius: 8px;
   margin-bottom: 2rem;

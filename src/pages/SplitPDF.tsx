@@ -39,6 +39,7 @@ const SplitPDF = () => {
   const [downloadAsZip, setDownloadAsZip] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const { increment } = useCounter();
 
   const loadPDFInfo = async (pdfFile: File) => {
@@ -60,6 +61,7 @@ const SplitPDF = () => {
   const handleFileSelected = async (files: File[]) => {
     if (files.length > 0) {
       setFile(files[0]);
+      setDownloadSuccess(false);
       loadPDFInfo(files[0]);
       // Incrementar contador no upload
       await increment();
@@ -74,6 +76,7 @@ const SplitPDF = () => {
 
     setIsProcessing(true);
     setError(null);
+    setDownloadSuccess(false);
 
     try {
       const options: SplitOptions = {
@@ -84,6 +87,7 @@ const SplitPDF = () => {
       };
 
       await downloadSplitPDFs(file, options, downloadAsZip);
+      setDownloadSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao dividir PDF');
     } finally {
@@ -284,6 +288,12 @@ const SplitPDF = () => {
             {error && (
               <div className="error-message">
                 <span>{error}</span>
+              </div>
+            )}
+
+            {downloadSuccess && (
+              <div className="success-message" role="status">
+                Download concluído. Verifique sua pasta de downloads.
               </div>
             )}
 

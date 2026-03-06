@@ -42,12 +42,12 @@
 
 .size-item.estimated {
   border-color: var(--primary-color);
-  background: rgba(30, 64, 175, 0.05);
+  background: var(--primary-bg-subtle);
 }
 
 .size-item.reduction {
   border-color: var(--success);
-  background: rgba(16, 185, 129, 0.05);
+  background: var(--success-bg);
 }
 
 .size-label {
@@ -139,7 +139,7 @@
 
 .compress-info {
   padding: 1rem;
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--warning-bg);
   border: 1px solid var(--warning);
   border-radius: 8px;
   margin-bottom: 2rem;

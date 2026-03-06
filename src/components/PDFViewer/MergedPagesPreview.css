@@ -35,12 +35,12 @@
   aspect-ratio: 3/4;
   cursor: move;
   transition: var(--transition);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .page-thumbnail:hover {
   border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
   transform: translateY(-2px);
 }
 
@@ -107,7 +107,7 @@
   cursor: pointer;
   font-size: 1rem;
   transition: var(--transition);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-card);
 }
 
 .page-action-btn:hover {

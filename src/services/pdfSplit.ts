@@ -65,6 +65,10 @@ export const downloadSplitPDFs = async (
   try {
     const blobs = await splitPDF(file, options);
 
+    if (blobs.length === 0) {
+      throw new Error('Nenhuma página para extrair. Verifique o intervalo ou a página selecionada.');
+    }
+
     if (downloadAsZip && blobs.length > 1) {
       // Criar um arquivo ZIP com todos os PDFs
       const zip = new JSZip();

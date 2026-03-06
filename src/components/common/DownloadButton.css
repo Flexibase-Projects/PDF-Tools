@@ -34,7 +34,7 @@
 }
 
 .download-button.success:hover {
-  background: #059669;
+  background: var(--success-hover);
 }
 
 .download-button l-tailspin {

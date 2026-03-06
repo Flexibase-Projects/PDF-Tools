@@ -8,7 +8,7 @@
 }
 
 .pdf-file-preview:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .pdf-file-header {
@@ -82,7 +82,7 @@
 }
 
 .pdf-file-remove:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--error-bg);
   color: var(--error);
 }
 
