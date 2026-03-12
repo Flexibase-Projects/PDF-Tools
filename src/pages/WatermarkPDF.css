@@ -161,35 +161,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(128, 128, 128, 0.8);
-  font-weight: 700;
   pointer-events: none;
   white-space: nowrap;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
-/* Alinhado ao PDF: margem ~40pt ≈ 5% (vertical) e ~7% (horizontal) em A4 */
+/* Texto: mesma aparência do PDF (cor e opacidade via inline; Helvetica regular) */
+.watermark-preview-overlay-text {
+  font-weight: normal;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.watermark-preview-overlay-image {
+  padding: 0;
+}
+
+.watermark-preview-overlay-image .watermark-preview-image {
+  display: block;
+  object-fit: contain;
+  width: auto;
+  height: auto;
+}
+
+/* Alinhado ao PDF: MARGIN 40pt ≈ 4.75% alt. e 6.7% larg. em A4 (842×595pt) */
 .watermark-preview-wrap .watermark-pos-top-left {
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-start;
-  padding: 5% 0 0 7%;
+  padding: 4.75% 0 0 6.7%;
 }
 
 .watermark-preview-wrap .watermark-pos-top-center {
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
-  padding-bottom: 5%;
+  padding-top: 4.75%;
 }
 
 .watermark-preview-wrap .watermark-pos-top-right {
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-end;
-  padding: 5% 7% 0 0;
+  padding: 4.75% 6.7% 0 0;
 }
 
 .watermark-preview-wrap .watermark-pos-middle-left {
   justify-content: flex-start;
-  padding-left: 7%;
+  padding-left: 6.7%;
 }
 
 .watermark-preview-wrap .watermark-pos-center {
@@ -198,25 +212,25 @@
 
 .watermark-preview-wrap .watermark-pos-middle-right {
   justify-content: flex-end;
-  padding-right: 7%;
+  padding-right: 6.7%;
 }
 
 .watermark-preview-wrap .watermark-pos-bottom-left {
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: flex-start;
-  padding: 0 0 5% 7%;
+  padding: 0 0 4.75% 6.7%;
 }
 
 .watermark-preview-wrap .watermark-pos-bottom-center {
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
-  padding-top: 5%;
+  padding-bottom: 4.75%;
 }
 
 .watermark-preview-wrap .watermark-pos-bottom-right {
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: flex-end;
-  padding: 0 7% 5% 0;
+  padding: 0 6.7% 4.75% 0;
 }
 
 .watermark-form {
@@ -291,8 +305,10 @@
   accent-color: var(--primary-color);
 }
 
-.watermark-config-image {
-  grid-template-columns: 1fr;
+.watermark-config-image .watermark-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .watermark-image-upload {

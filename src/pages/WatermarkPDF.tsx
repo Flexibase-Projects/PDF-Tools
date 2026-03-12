@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import FileUpload from '../components/common/FileUpload';
 import DownloadButton from '../components/common/DownloadButton';
 import LoadingOverlay from '../components/common/LoadingOverlay';
@@ -122,6 +122,16 @@ const WatermarkPDF = () => {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const imagePreviewUrl = useMemo(
+    () => (imageFile ? URL.createObjectURL(imageFile) : ''),
+    [imageFile]
+  );
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+    };
+  }, [imagePreviewUrl]);
+
   return (
     <div className="page-container watermark-page">
       <div className="page-header">
@@ -181,11 +191,13 @@ const WatermarkPDF = () => {
                       className="watermark-preview-pdf"
                     />
                     <div
-                      className={`watermark-preview-overlay watermark-pos-${textOptions.position}`}
+                      className={`watermark-preview-overlay watermark-preview-overlay-text watermark-pos-${textOptions.position}`}
                       style={{
                         opacity: textOptions.opacity,
-                        fontSize: Math.min(textOptions.fontSize, 244),
+                        fontSize: `${textOptions.fontSize * (96 / 72) * 1.3}px`,
                         transform: `rotate(${textOptions.rotation ?? 0}deg)`,
+                        color: 'rgb(128, 128, 128)',
+                        fontFamily: 'Helvetica, Arial, sans-serif',
                       }}
                     >
                       {textOptions.text || 'Texto'}
@@ -287,33 +299,63 @@ const WatermarkPDF = () => {
               </div>
             ) : (
               <div className="watermark-config watermark-config-image">
-                <div className="watermark-image-upload">
-                  <p className="watermark-type-label">Imagem da marca d&apos;água</p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg"
-                    onChange={handleImageSelected}
-                    className="watermark-image-input"
-                  />
-                  <button
-                    type="button"
-                    className="watermark-upload-image-btn"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <FiImage size={18} />
-                    {imageFile ? imageFile.name : 'Selecionar PNG ou JPEG'}
-                  </button>
-                  {imageFile && (
-                    <p className="watermark-image-dimensions">
-                      Tamanho: {imageFile.name} — {(imageFile.size / 1024).toFixed(1)} KB
-                    </p>
-                  )}
-                  {imageError && (
-                    <p className="watermark-image-error">{imageError}</p>
-                  )}
+                <div className="watermark-preview-section">
+                  <p className="watermark-preview-title">Preview</p>
+                  <div className="watermark-preview-wrap">
+                    <PDFPreview
+                      key={`${pdfFile.name}-${pdfFile.lastModified}`}
+                      file={pdfFile}
+                      pageNumber={1}
+                      scale={1.3}
+                      className="watermark-preview-pdf"
+                    />
+                    {imagePreviewUrl && (
+                      <div
+                        className={`watermark-preview-overlay watermark-preview-overlay-image watermark-pos-${imageOptions.position}`}
+                        aria-hidden
+                      >
+                        <img
+                          src={imagePreviewUrl}
+                          alt="Preview da marca d'água"
+                          className="watermark-preview-image"
+                          style={{
+                            transform: `rotate(${imageOptions.rotation}deg)`,
+                            maxWidth: `${40 * imageOptions.scale}%`,
+                            maxHeight: `${40 * imageOptions.scale}%`,
+                            opacity: 1,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="watermark-form">
+                  <div className="watermark-image-upload">
+                    <p className="watermark-type-label">Imagem da marca d&apos;água</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg"
+                      onChange={handleImageSelected}
+                      className="watermark-image-input"
+                    />
+                    <button
+                      type="button"
+                      className="watermark-upload-image-btn"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <FiImage size={18} />
+                      {imageFile ? imageFile.name : 'Selecionar PNG ou JPEG'}
+                    </button>
+                    {imageFile && (
+                      <p className="watermark-image-dimensions">
+                        Tamanho: {imageFile.name} — {(imageFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    )}
+                    {imageError && (
+                      <p className="watermark-image-error">{imageError}</p>
+                    )}
+                  </div>
                   <label className="watermark-label watermark-label-compact">
                     <span className="watermark-label-text">Posição</span>
                     <div className="watermark-position-grid" role="group" aria-label="Posição da marca d&#39;água">

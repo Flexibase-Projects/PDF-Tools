@@ -11,12 +11,13 @@
   margin: 0;
 }
 
+/* Área de assinatura sempre branca (como papel), independente do tema claro/escuro */
 .signature-pad-box {
   width: 100%;
   height: 200px;
   border: 2px dashed var(--border);
   border-radius: 8px;
-  background: var(--background);
+  background: #ffffff;
   padding: 4px;
   cursor: crosshair;
   box-sizing: border-box;

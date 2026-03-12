@@ -36,6 +36,54 @@ export interface ImageWatermarkOptions {
 
 const MARGIN = 40;
 
+/** Garante que (x, y) mantém o conteúdo dentro dos limites da página (evita erro e marca fora da folha). */
+function clampToPage(
+  x: number,
+  y: number,
+  contentWidth: number,
+  contentHeight: number,
+  pageWidth: number,
+  pageHeight: number
+): { x: number; y: number } {
+  const maxX = Math.max(0, pageWidth - contentWidth);
+  const maxY = Math.max(0, pageHeight - contentHeight);
+  return {
+    x: Math.max(0, Math.min(maxX, x)),
+    y: Math.max(0, Math.min(maxY, y)),
+  };
+}
+
+/**
+ * Converte coordenadas do espaço "visível" (como o usuário vê a página após rotação)
+ * para coordenadas do media box do PDF (sempre não rotacionado).
+ * getSize() retorna dimensões do media box; com rotação 90/270 o que o usuário vê
+ * tem largura/altura trocadas, e a posição calculada sem esse ajuste fica errada.
+ */
+function visibleToMediaCoords(
+  vx: number,
+  vy: number,
+  _contentWidth: number,
+  _contentHeight: number,
+  pageWidth: number,
+  pageHeight: number,
+  pageRotationDeg: number
+): { x: number; y: number } {
+  const norm = ((pageRotationDeg % 360) + 360) % 360;
+  if (norm === 90) {
+    // 90° CW: canto inferior esquerdo visível = (pageWidth, 0) no media box → (mx, my) = (pageWidth - vy, vx)
+    return { x: pageWidth - vy, y: vx };
+  }
+  if (norm === 270) {
+    // 270° CW: canto inferior esquerdo visível = (0, pageHeight) no media box → (mx, my) = (vy, pageHeight - vx)
+    return { x: vy, y: pageHeight - vx };
+  }
+  if (norm === 180) {
+    return { x: pageWidth - vx - _contentWidth, y: pageHeight - vy - _contentHeight };
+  }
+  // 0°
+  return { x: vx, y: vy };
+}
+
 function getTextPosition(
   pageWidth: number,
   pageHeight: number,
@@ -44,39 +92,72 @@ function getTextPosition(
   position: WatermarkPosition,
   pageRotationDeg: number = 0
 ): { x: number; y: number } {
-  const cx = (pageWidth - textWidth) / 2;
-  const cy = (pageHeight - textHeight) / 2;
-  const left = MARGIN;
-  const right = pageWidth - MARGIN - textWidth;
-  // PDF: origem no canto inferior esquerdo, y sobe. Com Rotate 180° o visual fica invertido.
-  let top = pageHeight - MARGIN - textHeight;
-  let bottom = MARGIN;
-  if (pageRotationDeg === 180) {
-    [top, bottom] = [bottom, top];
-  }
+  // Dimensões "visíveis": com 90/270 o que o usuário vê tem largura/altura trocadas
+  const is90or270 = pageRotationDeg === 90 || pageRotationDeg === 270;
+  const visW = is90or270 ? pageHeight : pageWidth;
+  const visH = is90or270 ? pageWidth : pageHeight;
 
+  const cx = (visW - textWidth) / 2;
+  const cy = (visH - textHeight) / 2;
+  const left = MARGIN;
+  const right = visW - MARGIN - textWidth;
+  const top = visH - MARGIN - textHeight;
+  const bottom = MARGIN;
+
+  let vx: number;
+  let vy: number;
   switch (position) {
     case 'top-left':
-      return { x: left, y: top };
+      vx = left;
+      vy = top;
+      break;
     case 'top-center':
-      return { x: cx, y: top };
+      vx = cx;
+      vy = top;
+      break;
     case 'top-right':
-      return { x: right, y: top };
+      vx = right;
+      vy = top;
+      break;
     case 'middle-left':
-      return { x: left, y: cy };
+      vx = left;
+      vy = cy;
+      break;
     case 'center':
-      return { x: cx, y: cy };
+      vx = cx;
+      vy = cy;
+      break;
     case 'middle-right':
-      return { x: right, y: cy };
+      vx = right;
+      vy = cy;
+      break;
     case 'bottom-left':
-      return { x: left, y: bottom };
+      vx = left;
+      vy = bottom;
+      break;
     case 'bottom-center':
-      return { x: cx, y: bottom };
+      vx = cx;
+      vy = bottom;
+      break;
     case 'bottom-right':
-      return { x: right, y: bottom };
+      vx = right;
+      vy = bottom;
+      break;
     default:
-      return { x: cx, y: cy };
+      vx = cx;
+      vy = cy;
   }
+
+  const { x, y } = visibleToMediaCoords(
+    vx,
+    vy,
+    textWidth,
+    textHeight,
+    pageWidth,
+    pageHeight,
+    pageRotationDeg
+  );
+  return clampToPage(x, y, textWidth, textHeight, pageWidth, pageHeight);
 }
 
 function getImagePosition(
@@ -87,38 +168,71 @@ function getImagePosition(
   position: WatermarkPosition,
   pageRotationDeg: number = 0
 ): { x: number; y: number } {
-  const cx = (pageWidth - imgWidth) / 2;
-  const cy = (pageHeight - imgHeight) / 2;
-  const left = MARGIN;
-  const right = pageWidth - MARGIN - imgWidth;
-  let top = pageHeight - MARGIN - imgHeight;
-  let bottom = MARGIN;
-  if (pageRotationDeg === 180) {
-    [top, bottom] = [bottom, top];
-  }
+  const is90or270 = pageRotationDeg === 90 || pageRotationDeg === 270;
+  const visW = is90or270 ? pageHeight : pageWidth;
+  const visH = is90or270 ? pageWidth : pageHeight;
 
+  const cx = (visW - imgWidth) / 2;
+  const cy = (visH - imgHeight) / 2;
+  const left = MARGIN;
+  const right = visW - MARGIN - imgWidth;
+  const top = visH - MARGIN - imgHeight;
+  const bottom = MARGIN;
+
+  let vx: number;
+  let vy: number;
   switch (position) {
     case 'top-left':
-      return { x: left, y: top };
+      vx = left;
+      vy = top;
+      break;
     case 'top-center':
-      return { x: cx, y: top };
+      vx = cx;
+      vy = top;
+      break;
     case 'top-right':
-      return { x: right, y: top };
+      vx = right;
+      vy = top;
+      break;
     case 'middle-left':
-      return { x: left, y: cy };
+      vx = left;
+      vy = cy;
+      break;
     case 'center':
-      return { x: cx, y: cy };
+      vx = cx;
+      vy = cy;
+      break;
     case 'middle-right':
-      return { x: right, y: cy };
+      vx = right;
+      vy = cy;
+      break;
     case 'bottom-left':
-      return { x: left, y: bottom };
+      vx = left;
+      vy = bottom;
+      break;
     case 'bottom-center':
-      return { x: cx, y: bottom };
+      vx = cx;
+      vy = bottom;
+      break;
     case 'bottom-right':
-      return { x: right, y: bottom };
+      vx = right;
+      vy = bottom;
+      break;
     default:
-      return { x: cx, y: cy };
+      vx = cx;
+      vy = cy;
   }
+
+  const { x, y } = visibleToMediaCoords(
+    vx,
+    vy,
+    imgWidth,
+    imgHeight,
+    pageWidth,
+    pageHeight,
+    pageRotationDeg
+  );
+  return clampToPage(x, y, imgWidth, imgHeight, pageWidth, pageHeight);
 }
 
 export async function applyTextWatermark(

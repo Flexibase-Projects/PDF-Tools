@@ -1,0 +1,411 @@
+.edit-pdf-page .page-content {
+  padding: 1.5rem 2rem;
+}
+
+.edit-pdf-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+
+.edit-pdf-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-pdf-preview-panel {
+  flex-shrink: 0;
+  width: 400px;
+  position: sticky;
+  top: 1.5rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.edit-pdf-preview-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-pdf-preview-page-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.edit-pdf-preview-page-label select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.edit-pdf-preview-box {
+  transition: transform 0.2s ease;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.edit-pdf-preview-page-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-pdf-preview-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  z-index: 1;
+}
+
+.edit-pdf-preview-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.edit-pdf-preview-overlays {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.edit-pdf-preview-text-overlay {
+  color: #000;
+  font-weight: 500;
+  text-align: center;
+  max-width: 90%;
+  word-break: break-word;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.edit-pdf-preview-image-overlay img {
+  max-width: 120px;
+  max-height: 80px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.edit-pdf-preview-empty {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: center;
+  padding: 2rem;
+}
+
+.edit-pdf-page-card-preview {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.edit-pdf-empty-hint {
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: center;
+  padding: 2rem;
+}
+
+.edit-pdf-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.edit-pdf-section:first-of-type {
+  margin-top: 1rem;
+  padding-top: 0;
+  border-top: none;
+}
+
+.edit-pdf-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-pdf-pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.edit-pdf-page-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-pdf-page-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.edit-pdf-page-card-thumb {
+  position: relative;
+  aspect-ratio: 3/4;
+  background: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-pdf-page-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.edit-pdf-page-card-thumb span:not(.edit-pdf-page-badge) {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.edit-pdf-page-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.edit-pdf-page-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--background);
+}
+
+.edit-pdf-page-card-actions select {
+  flex: 1;
+  min-width: 60px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.edit-pdf-page-move {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.edit-pdf-page-move button {
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.edit-pdf-page-move button:hover:not(:disabled) {
+  background: var(--primary-bg-hover);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.edit-pdf-page-move button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-pdf-remove-page {
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--error);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.edit-pdf-remove-page:hover {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+
+.edit-pdf-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.edit-pdf-add-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.edit-pdf-add-row select,
+.edit-pdf-add-row input[type="text"],
+.edit-pdf-add-row input[type="number"] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--text-primary);
+  min-width: 120px;
+}
+
+.edit-pdf-btn-add {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.edit-pdf-btn-add:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.edit-pdf-btn-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.edit-pdf-file-name {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-pdf-add-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-pdf-add-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: var(--background);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.edit-pdf-remove-item {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.edit-pdf-remove-item:hover {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+@media (max-width: 968px) {
+  .edit-pdf-layout {
+    flex-direction: column;
+  }
+
+  .edit-pdf-preview-panel {
+    width: 100%;
+    position: static;
+  }
+
+  .edit-pdf-preview-page-wrap {
+    max-width: 320px;
+  }
+
+  .edit-pdf-preview-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .edit-pdf-pages-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .edit-pdf-add-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edit-pdf-add-row label {
+    min-width: 0;
+  }
+}

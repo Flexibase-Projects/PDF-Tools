@@ -55,7 +55,9 @@ function PresentPDF() {
   const overlayRef = useRef<HTMLCanvasElement>(null);
   const currentStrokeRef = useRef<Point[]>([]);
   const strokesByPageRef = useRef<Record<number, Stroke[]>>({});
+  const totalPagesRef = useRef(0);
   strokesByPageRef.current = strokesByPage;
+  totalPagesRef.current = totalPages;
 
   const loadPdf = useCallback(async (pdfFile: File): Promise<void> => {
     setError(null);
@@ -76,7 +78,9 @@ function PresentPDF() {
     async (pageNum: number) => {
       const pdf = pdfDocRef.current;
       const canvas = pdfCanvasRef.current;
+      const total = totalPagesRef.current;
       if (!pdf || !canvas || stageSize.width <= 0 || stageSize.height <= 0) return;
+      if (pageNum < 1 || pageNum > total) return;
 
       const page = await pdf.getPage(pageNum);
       const viewport = page.getViewport({ scale: 1 });
@@ -250,7 +254,8 @@ function PresentPDF() {
   }, []);
 
   const goNext = useCallback(() => {
-    setCurrentPage((p) => Math.min(totalPages, p + 1));
+    const total = totalPagesRef.current;
+    setCurrentPage((p) => (total <= 0 ? p : Math.min(total, p + 1)));
   }, []);
 
   const handleExitPresentation = useCallback(() => {
