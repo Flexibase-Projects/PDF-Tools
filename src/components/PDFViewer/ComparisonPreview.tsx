@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { generateThumbnail, generateCompressedThumbnail } from '../../utils/pdfUtils';
+import { isFileReadPermissionError, FILE_READ_ERROR_USER_MESSAGE } from '../../utils/fileUtils';
 import LDRSLoader from '../common/LDRSLoader';
 import { FiFile } from 'react-icons/fi';
 import './ComparisonPreview.css';
@@ -15,6 +16,7 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
   const [compressedImage, setCompressedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFileReadError, setIsFileReadError] = useState(false);
   const [zoomPosition, setZoomPosition] = useState<{ x: number; y: number } | null>(null);
   const [zoomLevel, setZoomLevel] = useState(5.0); // Nível de zoom inicial (dobro do anterior)
   
@@ -25,6 +27,7 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
     const loadImages = async () => {
       setLoading(true);
       setError(null);
+      setIsFileReadError(false);
 
       try {
         // Carregar imagem original (PNG para máxima qualidade)
@@ -37,7 +40,11 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
         setCompressedImage(compressed);
       } catch (err) {
         console.error('Erro ao carregar previews:', err);
-        setError('Erro ao gerar previews de comparação');
+        const message = isFileReadPermissionError(err)
+          ? FILE_READ_ERROR_USER_MESSAGE
+          : 'Erro ao gerar previews de comparação';
+        setError(message);
+        setIsFileReadError(isFileReadPermissionError(err));
       } finally {
         setLoading(false);
       }
@@ -137,6 +144,15 @@ const ComparisonPreview = ({ file, quality, scale = 1.0 }: ComparisonPreviewProp
   }
 
   if (error) {
+    if (isFileReadError) {
+      return (
+        <div className="comparison-preview-error file-read-error-wrapper">
+          <div className="file-read-error-message">
+            <p>{error}</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="comparison-preview-error">
         <FiFile />

@@ -6,7 +6,7 @@ import DownloadButton from '../components/common/DownloadButton';
 import LoadingOverlay from '../components/common/LoadingOverlay';
 import ComparisonPreview from '../components/PDFViewer/ComparisonPreview';
 import { useCounter } from '../contexts/CounterContext';
-import { formatFileSize } from '../utils/fileUtils';
+import { formatFileSize, isFileReadPermissionError, FILE_READ_ERROR_USER_MESSAGE } from '../utils/fileUtils';
 import './PageStyles.css';
 import './CompressPDF.css';
 
@@ -17,6 +17,7 @@ const CompressPDF = () => {
   const [estimatedSize, setEstimatedSize] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFileReadError, setIsFileReadError] = useState(false);
   const { increment } = useCounter();
 
   useEffect(() => {
@@ -45,6 +46,7 @@ const CompressPDF = () => {
 
     setIsProcessing(true);
     setError(null);
+    setIsFileReadError(false);
 
     try {
       const options: CompressOptions = { quality };
@@ -53,7 +55,9 @@ const CompressPDF = () => {
       // Incrementar contador no download
       await increment();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao comprimir PDF');
+      const isFileRead = isFileReadPermissionError(err);
+      setError(isFileRead ? FILE_READ_ERROR_USER_MESSAGE : (err instanceof Error ? err.message : 'Erro ao comprimir PDF'));
+      setIsFileReadError(isFileRead);
     } finally {
       setIsProcessing(false);
     }
@@ -151,8 +155,8 @@ const CompressPDF = () => {
             </div>
 
             {error && (
-              <div className="error-message">
-                <span>{error}</span>
+              <div className={isFileReadError ? 'file-read-error-message' : 'error-message'}>
+                {isFileReadError ? <p>{error}</p> : <span>{error}</span>}
               </div>
             )}
 

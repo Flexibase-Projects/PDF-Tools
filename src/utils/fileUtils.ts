@@ -44,6 +44,22 @@ export const generateId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 };
 
+/** Mensagem do navegador quando o arquivo não pode ser lido (permissão revogada após seleção) */
+const FILE_READ_PERMISSION_PATTERN = /could not be read|permission problems|reference to a file was acquired/i;
+
+/**
+ * Verifica se o erro é o de "arquivo não pôde ser lido por permissão" (comum em arquivos grandes
+ * ou em pastas sincronizadas, quando o navegador revoga o acesso ao File após a seleção).
+ */
+export const isFileReadPermissionError = (error: unknown): boolean => {
+  const message = error instanceof Error ? error.message : String(error);
+  return FILE_READ_PERMISSION_PATTERN.test(message);
+};
+
+/** Mensagem amigável exibida ao usuário quando ocorre o erro de permissão de leitura do arquivo */
+export const FILE_READ_ERROR_USER_MESSAGE =
+  'O arquivo não pôde ser lido. Isso costuma acontecer quando o navegador perde o acesso ao arquivo após você tê-lo selecionado — por exemplo, se o arquivo está em uma pasta sincronizada (OneDrive, Google Drive), aberto em outro programa ou se o antivírus bloqueou o acesso. Tente fechar outros programas que estejam usando o PDF, mover o arquivo para uma pasta local (ex.: Área de Trabalho) e selecioná-lo novamente.';
+
 export const validateImageFile = (file: File): { valid: boolean; error?: string } => {
   const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
   if (!validTypes.includes(file.type) && !/\.(png|jpe?g)$/i.test(file.name)) {
