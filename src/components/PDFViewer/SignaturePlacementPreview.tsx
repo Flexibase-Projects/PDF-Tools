@@ -142,6 +142,8 @@ const SignaturePlacementPreview = ({
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
             role="presentation"
+            title="Arraste para escolher onde assinar no PDF"
+            aria-label="Caixa de assinatura — arraste para reposicionar"
           >
             {signatureDataUrl ? (
               <img
@@ -150,7 +152,9 @@ const SignaturePlacementPreview = ({
                 className="signature-placement-preview-img"
               />
             ) : (
-              <span className="signature-placement-placeholder">Assinatura aqui</span>
+              <span className="signature-placement-placeholder">
+                Assinatura aqui — arraste para mover
+              </span>
             )}
           </div>
         </div>

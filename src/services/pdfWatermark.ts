@@ -249,7 +249,8 @@ export async function applyTextWatermark(
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const pages = pdfDoc.getPages();
 
-  const rotationRad = rotation !== 0 ? (rotation * Math.PI) / 180 : 0;
+  // CSS rotate() é no sentido horário; pdf-lib usa anti-horário. Negar para igualar ao preview.
+  const rotationRad = rotation !== 0 ? (-rotation * Math.PI) / 180 : 0;
 
   for (const page of pages) {
     const { width: pageWidth, height: pageHeight } = page.getSize();
@@ -313,7 +314,8 @@ export async function applyImageWatermark(
     : await pdfDoc.embedJpg(imageBytes);
 
   const pages = pdfDoc.getPages();
-  const rotationRad = (rotation * Math.PI) / 180;
+  // CSS rotate() é no sentido horário; pdf-lib usa anti-horário. Negar para igualar ao preview.
+  const rotationRad = (-rotation * Math.PI) / 180;
 
   for (const page of pages) {
     const { width: pageWidth, height: pageHeight } = page.getSize();

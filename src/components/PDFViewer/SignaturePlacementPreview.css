@@ -44,6 +44,8 @@
   justify-content: center;
   overflow: hidden;
   box-sizing: border-box;
+  touch-action: none; /* evita scroll da página ao arrastar no mobile */
+  user-select: none;
 }
 
 .signature-placement-box.dragging {

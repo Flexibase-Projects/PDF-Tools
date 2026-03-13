@@ -60,14 +60,24 @@ export const isFileReadPermissionError = (error: unknown): boolean => {
 export const FILE_READ_ERROR_USER_MESSAGE =
   'O arquivo não pôde ser lido. Isso costuma acontecer quando o navegador perde o acesso ao arquivo após você tê-lo selecionado — por exemplo, se o arquivo está em uma pasta sincronizada (OneDrive, Google Drive), aberto em outro programa ou se o antivírus bloqueou o acesso. Tente fechar outros programas que estejam usando o PDF, mover o arquivo para uma pasta local (ex.: Área de Trabalho) e selecioná-lo novamente.';
 
+const IMAGE_VALID_MIMES = ['image/png', 'image/jpeg', 'image/jpg'];
+const IMAGE_VALID_EXT = /\.(png|jpe?g)$/i;
+
 export const validateImageFile = (file: File): { valid: boolean; error?: string } => {
-  const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-  if (!validTypes.includes(file.type) && !/\.(png|jpe?g)$/i.test(file.name)) {
-    return { valid: false, error: 'Use uma imagem PNG ou JPEG' };
+  const byMime = IMAGE_VALID_MIMES.includes(file.type);
+  const byExt = IMAGE_VALID_EXT.test(file.name);
+  if (!byMime && !byExt) {
+    const hint = /\.webp$/i.test(file.name)
+      ? ' Use PNG ou JPEG (WebP não é suportado).'
+      : '';
+    return { valid: false, error: `Use uma imagem PNG ou JPEG.${hint}` };
   }
   const maxSize = 10 * 1024 * 1024; // 10MB
   if (file.size > maxSize) {
     return { valid: false, error: 'Imagem muito grande. Máximo: 10MB' };
+  }
+  if (file.size === 0) {
+    return { valid: false, error: 'O arquivo está vazio' };
   }
   return { valid: true };
 };

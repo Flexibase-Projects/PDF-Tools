@@ -12,16 +12,24 @@ export type PageOrder = number[];
 /** Rotações por página original (1-based): 0, 90, 180 ou 270 graus. */
 export type PageRotations = Record<number, 0 | 90 | 180 | 270>;
 
+export type TextAlign = 'left' | 'center' | 'right';
+
 export interface TextAddition {
   /** Número da página original (1-based). */
   pageNumber: number;
   text: string;
-  /** X em pontos (origem canto inferior esquerdo). Se omitido, centralizado. */
+  /** X em pontos (origem canto inferior esquerdo). Se omitido, usa align para posição. */
   x?: number;
   /** Y em pontos. Se omitido, centralizado. */
   y?: number;
   fontSize?: number;
   opacity?: number;
+  /** Negrito (usa Helvetica-Bold). */
+  bold?: boolean;
+  /** Cor RGB 0–1. */
+  color?: { r: number; g: number; b: number };
+  /** Alinhamento horizontal (quando x é omitido ou como referência do ponto x). */
+  align?: TextAlign;
 }
 
 export interface ImageAddition {
@@ -80,6 +88,7 @@ export async function applyPDFEdits(pdfFile: File, options: EditPDFOptions): Pro
   copiedPages.forEach((p) => newDoc.addPage(p));
 
   const font = await newDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await newDoc.embedFont(StandardFonts.HelveticaBold);
 
   for (let i = 0; i < copiedPages.length; i++) {
     const newPage = newDoc.getPage(i);
@@ -96,16 +105,30 @@ export async function applyPDFEdits(pdfFile: File, options: EditPDFOptions): Pro
     const page = newDoc.getPage(newIndex);
     const { width: pageWidth, height: pageHeight } = page.getSize();
     const fontSize = add.fontSize ?? DEFAULT_FONT_SIZE;
-    const textWidth = font.widthOfTextAtSize(add.text, fontSize);
+    const useFont = add.bold ? fontBold : font;
+    const textWidth = useFont.widthOfTextAtSize(add.text, fontSize);
     const textHeight = fontSize * 1.2;
-    const x = add.x ?? Math.max(MARGIN, (pageWidth - textWidth) / 2);
+    const align = add.align ?? 'left';
+    let x: number;
+    if (add.x != null) {
+      if (align === 'center') x = add.x - textWidth / 2;
+      else if (align === 'right') x = add.x - textWidth;
+      else x = add.x;
+    } else {
+      if (align === 'left') x = MARGIN;
+      else if (align === 'right') x = Math.max(MARGIN, pageWidth - MARGIN - textWidth);
+      else x = Math.max(MARGIN, (pageWidth - textWidth) / 2);
+    }
     const y = add.y ?? Math.max(MARGIN, (pageHeight - textHeight) / 2);
+    const colorRgb = add.color
+      ? rgb(add.color.r, add.color.g, add.color.b)
+      : rgb(0, 0, 0);
     page.drawText(add.text, {
       x,
       y,
       size: fontSize,
-      font,
-      color: rgb(0, 0, 0),
+      font: useFont,
+      color: colorRgb,
       opacity: Math.max(0.1, Math.min(1, add.opacity ?? DEFAULT_TEXT_OPACITY)),
     });
   }
