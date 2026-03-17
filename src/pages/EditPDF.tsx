@@ -196,6 +196,7 @@ const EditPDF = () => {
   } | null>(null);
   const [editingTextIndex, setEditingTextIndex] = useState<number | null>(null);
   const [showRemoveAllConfirm, setShowRemoveAllConfirm] = useState(false);
+  const sidebarRightRef = useRef<HTMLElement | null>(null);
   const dragTextStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const textAdditionsRef = useRef<typeof textAdditions>([]);
   textAdditionsRef.current = textAdditions;
@@ -792,16 +793,24 @@ const EditPDF = () => {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const inInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
       if (e.ctrlKey && e.key === 'z') {
-        const target = e.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+        if (inInput) return;
         e.preventDefault();
         restoreFromHistory();
+        return;
+      }
+      /* Backspace ou Delete: remover imagem selecionada (mesmo comportamento do texto) */
+      if ((e.key === 'Backspace' || e.key === 'Delete') && selectedImageIndex != null && !inInput) {
+        e.preventDefault();
+        removeImageAddition(selectedImageIndex);
+        setSelectedImageIndex(null);
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [restoreFromHistory]);
+  }, [restoreFromHistory, selectedImageIndex]);
 
   /* Mantém o PDF estático ao abrir o editor de texto: restaura scroll após foco no input */
   useEffect(() => {
@@ -1133,14 +1142,18 @@ const EditPDF = () => {
                         const stackedIndex = textAdditions
                           .slice(0, idx)
                           .filter((x) => x.pageNumber === previewPage).length;
+                        const isEditing = editingTextIndex === idx;
+                        const fontSize = isEditing ? addTextSize : (t.fontSize ?? 12);
+                        const bold = isEditing ? addTextBold : (t.bold ?? false);
+                        const color = isEditing ? addTextColor : colorCss;
                         return (
                           <div
                             key={idx}
-                            className={`edit-pdf-preview-text-overlay ${editingTextIndex === idx ? 'editing' : ''}`}
+                            className={`edit-pdf-preview-text-overlay ${isEditing ? 'editing' : ''}`}
                             style={{
-                              fontSize: Math.max(10, (t.fontSize ?? 12) * 0.8),
-                              fontWeight: t.bold ? 'bold' : undefined,
-                              color: colorCss,
+                              fontSize: Math.max(10, fontSize * 0.8),
+                              fontWeight: bold ? 'bold' : undefined,
+                              color,
                               pointerEvents: hasPos ? 'auto' : undefined,
                               cursor: hasPos ? (draggingTextIndex === idx ? 'grabbing' : 'grab') : undefined,
                               userSelect: hasPos && draggingTextIndex === idx ? 'none' : undefined,
@@ -1337,7 +1350,14 @@ const EditPDF = () => {
                                 cancelInlineText();
                               }
                             }}
-                            onBlur={submitInlineText}
+                            onBlur={(e) => {
+                              const next = e.relatedTarget as Node | null;
+                              if (next && sidebarRightRef.current?.contains(next)) return;
+                              setTimeout(() => {
+                                if (sidebarRightRef.current?.contains(document.activeElement as Node)) return;
+                                submitInlineText();
+                              }, 0);
+                            }}
                             placeholder="Digite aqui..."
                             aria-label="Editar texto no PDF"
                             style={{
@@ -1422,7 +1442,7 @@ const EditPDF = () => {
             </main>
 
             {/* DIREITA: painel de edição (cor, negrito, lista, salvar) */}
-            <aside className="edit-pdf-sidebar-right" aria-label="Editar PDF">
+            <aside ref={sidebarRightRef} className="edit-pdf-sidebar-right" aria-label="Editar PDF">
               <h2 className="edit-pdf-sidebar-right-title">Editar PDF</h2>
               <div className="edit-pdf-info-banner">
                 <FiInfo size={18} aria-hidden />
@@ -1490,67 +1510,6 @@ const EditPDF = () => {
                   </section>
                 );
               })}
-              {selectedImageIndex != null &&
-                imageAdditions[selectedImageIndex] &&
-                (!previewPage || imageAdditions[selectedImageIndex].pageNumber === previewPage) && (
-                  <section className="edit-pdf-section edit-pdf-image-size-section">
-                    <h3 className="edit-pdf-image-size-title">Tamanho da imagem</h3>
-                    <p className="edit-pdf-image-size-hint">
-                      Aproxime o cursor das bordas na preview e arraste para redimensionar, ou ajuste pelos campos abaixo (em pontos).
-                    </p>
-                    <div className="edit-pdf-image-size-fields">
-                      <label className="edit-pdf-image-size-label">
-                        Largura
-                        <input
-                          type="number"
-                          min={20}
-                          max={
-                            previewPageData
-                              ? Math.max(100, Math.round(previewPageData.width / THUMBNAIL_SCALE - 10))
-                              : 600
-                          }
-                          value={imageAdditions[selectedImageIndex].width ?? 100}
-                          onChange={(e) => {
-                            const val = Number(e.target.value);
-                            const maxW = previewPageData
-                              ? previewPageData.width / THUMBNAIL_SCALE - 10
-                              : 600;
-                            updateImageSize(
-                              selectedImageIndex,
-                              val ? Math.min(val, maxW) : undefined,
-                              undefined
-                            );
-                          }}
-                          aria-label="Largura da imagem em pontos"
-                        />
-                      </label>
-                      <label className="edit-pdf-image-size-label">
-                        Altura
-                        <input
-                          type="number"
-                          min={20}
-                          max={800}
-                          value={imageAdditions[selectedImageIndex].height ?? 100}
-                          onChange={(e) =>
-                            updateImageSize(
-                              selectedImageIndex,
-                              undefined,
-                              Number(e.target.value) || undefined
-                            )
-                          }
-                          aria-label="Altura da imagem em pontos"
-                        />
-                      </label>
-                    </div>
-                    <button
-                      type="button"
-                      className="edit-pdf-image-size-close"
-                      onClick={() => setSelectedImageIndex(null)}
-                    >
-                      Fechar
-                    </button>
-                  </section>
-                )}
               <section className="edit-pdf-section">
               <div className="edit-pdf-add-row">
                 <label>
@@ -1607,7 +1566,65 @@ const EditPDF = () => {
                 </ul>
               )}
             </section>
-
+              {editingTextIndex != null && textAdditions[editingTextIndex] && (
+                <section className="edit-pdf-section edit-pdf-text-format-section">
+                  <h3 className="edit-pdf-text-format-title">Formatação do texto</h3>
+                  <p className="edit-pdf-text-format-hint">
+                    Altere tamanho, negrito e cor. Use Salvar ou Enter para aplicar; Cancelar ou Esc para descartar.
+                  </p>
+                  <div className="edit-pdf-text-format-fields">
+                    <label className="edit-pdf-text-format-label">
+                      Tamanho
+                      <input
+                        type="number"
+                        min={8}
+                        max={72}
+                        value={addTextSize}
+                        onChange={(e) => setAddTextSize(Number(e.target.value) || 12)}
+                        aria-label="Tamanho da fonte"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className={`edit-pdf-text-format-btn ${addTextBold ? 'active' : ''}`}
+                      onClick={() => setAddTextBold((b) => !b)}
+                      title="Negrito"
+                      aria-pressed={addTextBold}
+                      aria-label="Negrito"
+                    >
+                      <FiBold size={18} aria-hidden />
+                      Negrito
+                    </button>
+                    <label className="edit-pdf-text-format-label edit-pdf-text-format-color">
+                      Cor
+                      <input
+                        type="color"
+                        value={addTextColor}
+                        onChange={(e) => setAddTextColor(e.target.value)}
+                        aria-label="Cor do texto"
+                      />
+                    </label>
+                  </div>
+                  <div className="edit-pdf-text-format-actions">
+                    <button
+                      type="button"
+                      className="edit-pdf-text-format-save"
+                      onClick={() => submitInlineText()}
+                      aria-label="Salvar e sair da edição"
+                    >
+                      Salvar
+                    </button>
+                    <button
+                      type="button"
+                      className="edit-pdf-text-format-cancel"
+                      onClick={() => cancelInlineText()}
+                      aria-label="Cancelar edição"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </section>
+              )}
             <section className="edit-pdf-section">
               <h2 className="edit-pdf-section-title">
                 <FiImage /> Adicionar imagem
@@ -1734,7 +1751,81 @@ const EditPDF = () => {
                 </ul>
               )}
             </section>
-
+              {selectedImageIndex != null &&
+                imageAdditions[selectedImageIndex] &&
+                (!previewPage || imageAdditions[selectedImageIndex].pageNumber === previewPage) && (
+                  <section className="edit-pdf-section edit-pdf-image-size-section">
+                    <h3 className="edit-pdf-image-size-title">Tamanho da imagem</h3>
+                    <p className="edit-pdf-image-size-hint">
+                      Aproxime o cursor das bordas na preview e arraste para redimensionar, ou ajuste pelos campos abaixo (em pontos).
+                    </p>
+                    <div className="edit-pdf-image-size-fields">
+                      <label className="edit-pdf-image-size-label">
+                        Largura
+                        <input
+                          type="number"
+                          min={20}
+                          max={
+                            previewPageData
+                              ? Math.max(100, Math.round(previewPageData.width / THUMBNAIL_SCALE - 10))
+                              : 600
+                          }
+                          value={imageAdditions[selectedImageIndex].width ?? 100}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            const maxW = previewPageData
+                              ? previewPageData.width / THUMBNAIL_SCALE - 10
+                              : 600;
+                            updateImageSize(
+                              selectedImageIndex,
+                              val ? Math.min(val, maxW) : undefined,
+                              undefined
+                            );
+                          }}
+                          aria-label="Largura da imagem em pontos"
+                        />
+                      </label>
+                      <label className="edit-pdf-image-size-label">
+                        Altura
+                        <input
+                          type="number"
+                          min={20}
+                          max={800}
+                          value={imageAdditions[selectedImageIndex].height ?? 100}
+                          onChange={(e) =>
+                            updateImageSize(
+                              selectedImageIndex,
+                              undefined,
+                              Number(e.target.value) || undefined
+                            )
+                          }
+                          aria-label="Altura da imagem em pontos"
+                        />
+                      </label>
+                    </div>
+                    <div className="edit-pdf-image-size-actions">
+                      <button
+                        type="button"
+                        className="edit-pdf-image-size-remove"
+                        onClick={() => {
+                          removeImageAddition(selectedImageIndex);
+                          setSelectedImageIndex(null);
+                        }}
+                        aria-label="Remover imagem"
+                      >
+                        <FiTrash2 size={16} aria-hidden />
+                        Remover imagem
+                      </button>
+                      <button
+                        type="button"
+                        className="edit-pdf-image-size-close"
+                        onClick={() => setSelectedImageIndex(null)}
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </section>
+                )}
             </aside>
           </div>
         )}
